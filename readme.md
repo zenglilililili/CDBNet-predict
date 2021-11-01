@@ -16,6 +16,9 @@ data/predict/XX.jpg是模型预测的每张切片CTV图像，与data/label/XX.np
 
 # 二、代码运行
 ## 运行环境
+python 3.6
+
+
 Package              Version\
 -------------------- -----------\
 absl-py              0.10.0\
@@ -71,7 +74,7 @@ tensorflow-estimator 1.14.0\
 tensorflow-gpu       1.14.0\
 termcolor            1.1.0\
 threadpoolctl        2.1.0\
-torch                1.6.0+cu101\
+**torch                1.6.0+cu101**\
 torchvision          0.7.0+cu101\
 tqdm                 4.51.0\
 Werkzeug             1.0.1\
