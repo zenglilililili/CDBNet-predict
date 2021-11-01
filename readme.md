@@ -1,4 +1,4 @@
-#一、文件介绍
+# 一、文件介绍
 ## predictOne.py
 运行此文件可预测单个病例。\
 输入的是data/ct中的.npy数据，输出保存在data/predict中，输入与输出id一一对应\
