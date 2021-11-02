@@ -2,6 +2,8 @@ import torch
 import numpy as np
 import torch.nn as nn
 from imageio import imsave
+import cv2
+import os
 
 
 def getSliceTrain(ct_path):
@@ -16,6 +18,20 @@ def getSliceTrain(ct_path):
 def tensor_to_np(tensor):
     imgtmp = tensor.cpu().numpy()
     return imgtmp
+
+
+# 获取预测结果的轮廓
+def getContour(map, img, color):
+    kernel = np.ones((5, 5), dtype=np.uint8)
+    true = cv2.dilate(img, kernel, 1)  # 1:迭代次数，也就是执行几次膨胀操作
+
+    gray = cv2.cvtColor(true, cv2.COLOR_BGR2GRAY)
+    ret, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+    _, contours, hierarchy = cv2.findContours(binary, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    cv2.drawContours(map, contours, -1, color, 1)
+
+    return map
 
 
 def classifier(model1_path, model2_path, device, ct_path, save_path):
@@ -44,11 +60,21 @@ def classifier(model1_path, model2_path, device, ct_path, save_path):
             segOutput, _ = segModel(segInputs)
 
             segSlice_img_predict = tensor_to_np(segOutput)
-
             segSlice_img_predict = segSlice_img_predict.reshape(512, 512)
-            # print(segSlice_img_predict.shape)
 
-            imsave(save_path, segSlice_img_predict)
+            imsave(save_path.split(".jpg")[0] + "_predict.jpg", segSlice_img_predict)
+            imsave(ct_path.split(".npy")[0] + ".jpg", train_img.reshape(512, 512))
+
+            predict = cv2.imread(save_path.split(".jpg")[0] + "_predict.jpg")
+            ct = cv2.imread(ct_path.split(".npy")[0] + ".jpg")
+
+            img_contour = getContour(ct, predict, (255, 0, 0))  # 在原图勾画出轮廓
+            imsave(save_path, img_contour)
+
+            os.remove(ct_path.split(".npy")[0] + ".jpg")
+            os.remove(save_path.split(".jpg")[0] + "_predict.jpg")
+            os.remove(save_path.split(".jpg")[0] + "_contour.jpg")
+
         else:
             img = np.zeros((512, 512))
             imsave(save_path, img)
