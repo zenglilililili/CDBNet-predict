@@ -73,11 +73,9 @@ def classifier(model1_path, model2_path, device, ct_path, save_path):
 
             os.remove(ct_path.split(".npy")[0] + ".jpg")
             os.remove(save_path.split(".jpg")[0] + "_predict.jpg")
-            os.remove(save_path.split(".jpg")[0] + "_contour.jpg")
 
         else:
-            img = np.zeros((512, 512))
-            imsave(save_path, img)
+            imsave(save_path, train_img.reshape(512, 512))
 
 
 class DiceEva(nn.Module):
